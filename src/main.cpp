@@ -130,7 +130,7 @@ void loop()
         {
           testPressed = true; // Button is pressed
           Serial.println("Button pressed, test started.");
-          setLedColor(0, 255, 255);
+          setLedColor(0, 100, 200);
         }
         else if (testPressed && buttonState == LOW)
         {
@@ -150,7 +150,7 @@ void loop()
           }
           else
           {
-            setLedColor(200, 0, 0); // Red
+            setLedColor(200, 0, 0, 30000);
           }
         }
         else

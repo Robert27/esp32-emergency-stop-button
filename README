@@ -1,0 +1,77 @@
+# Emergency Button with HomeKit Integration
+
+## Overview
+This project uses an ESP32 microcontroller to create an emergency button that can trigger HomeKit scenes through MQTT. The ESP32 connects to an MQTT broker and publishes the state of the emergency button (pressed or released). This state is then processed by Homebridge using the **Mqttthing** plugin, which converts the MQTT message into a virtual switch in HomeKit. This allows you to use the emergency button to control HomeKit scenes or other automations.
+
+## Features
+- **ESP32 Microcontroller**: Reads the state of an emergency button and sends updates to an MQTT broker.
+- **MQTT Communication**: The ESP32 connects to a local MQTT broker, where it sends button state changes.
+- **Homebridge Integration**: The MQTT messages are handled by the **Mqttthing** plugin for Homebridge, converting them into a virtual switch for HomeKit.
+- **HomeKit Scene Triggering**: The virtual switch can be linked to HomeKit scenes or automations, enabling control of various smart home devices.
+
+## Components Needed
+- **ESP32** (e.g., ESP32-C3)
+- **Emergency Button** (e.g., a simple push-button switch)
+- **Wi-Fi Network** (for the ESP32 to connect to your MQTT broker)
+- **MQTT Broker** (e.g., Mosquitto or any other MQTT service)
+- **Homebridge** with **Mqttthing** plugin installed
+- **HomeKit App** (for controlling the virtual switch)
+
+## Wiring
+For the wiring setup, follow these steps:
+
+1. **Connect the Button to the ESP32**:
+   - **Pin 5 (GPIO 5)**: Connect this pin to one terminal of the emergency button.
+   - **GND**: Connect the other terminal of the emergency button to the GND pin of the ESP32.
+   
+2. **Button Type**:
+   - Use a **Normally Closed (NC)** push button. When the button is pressed, it will break the circuit, signaling a "pressed" state to the ESP32. When the button is released, the circuit is completed, signaling a "released" state.
+
+3. **Wiring Summary**:
+   - **Pin 5 (GPIO 5)** → One terminal of the push button
+   - **GND** → Other terminal of the push button
+
+The circuit should be simple, with the button closing or opening the circuit between **Pin 5** and **GND**.
+
+## How It Works
+1. **ESP32 Setup**: The ESP32 is programmed to monitor the state of a physical button. When the button is pressed or released, the ESP32 sends the corresponding state (`1` for pressed, `0` for released) to an MQTT broker.
+2. **MQTT Communication**: The ESP32 connects to the MQTT broker using provided credentials (SSID, password, and MQTT broker details).
+3. **Homebridge Mqttthing**: The Homebridge instance uses the **Mqttthing** plugin to subscribe to the MQTT topic (`home/emergency_button/state`). When a state change is received, it triggers the corresponding action in HomeKit.
+4. **Virtual Switch in HomeKit**: The MQTT message is converted into a virtual switch in HomeKit, which can then be used to trigger scenes or automations.
+
+## Project Setup
+
+### 1. PlatformIO Setup
+This project is built using PlatformIO. Follow these steps to set up the project:
+
+- Clone or download the repository to your local machine.
+- Open the project folder in **PlatformIO**.
+- Ensure you have the necessary libraries installed (`PubSubClient` for MQTT).
+- Define your Wi-Fi and MQTT credentials in the `platformio.ini` or through a `.env` file.
+
+### 2. Upload to ESP32
+- Select the correct board (`ESP32-C3` or your desired model) and upload the firmware using PlatformIO.
+- Ensure the ESP32 is connected to your network and can communicate with the MQTT broker.
+
+### 3. Homebridge Setup
+- Install Homebridge on a Raspberry Pi or another compatible device.
+- Install the **Mqttthing** plugin in Homebridge.
+- Configure Homebridge to subscribe to the MQTT topic `home/emergency_button/state` and link it to a virtual switch.
+
+### 4. Using the Emergency Button
+Once everything is set up:
+- Pressing the button will send an MQTT message to the broker.
+- Homebridge will convert this message into a virtual switch in HomeKit.
+- You can link the virtual switch to HomeKit scenes or automations.
+
+## Example MQTT Message
+- **Button Pressed**: Sends `0` to the MQTT topic `home/emergency_button/state`.
+- **Button Released**: Sends `1` to the MQTT topic `home/emergency_button/state`.
+
+## Notes
+- Make sure your MQTT broker is running and accessible to both the ESP32 and Homebridge.
+- You can modify the script to adjust debounce times, button behavior, and MQTT topics as needed.
+- The Homebridge Mqttthing plugin allows additional configuration for the virtual switch (e.g., state labels, service types).
+
+## Conclusion
+This project provides an easy way to trigger HomeKit scenes or automations with a physical emergency button. The combination of an ESP32, MQTT, and Homebridge makes it simple to integrate the button into your smart home ecosystem.

@@ -107,6 +107,7 @@ In order to provide your Wi-Fi and MQTT credentials to the ESP32, you need to cr
 
 Once everything is set up:
 
+- Run the function test to check if the button is working correctly. Press and release the button until the orange LED turns off.
 - Pressing the button will send an MQTT message to the broker.
 - Homebridge will convert this message into a virtual switch in HomeKit.
 - You can link the virtual switch to HomeKit scenes or automations. The created `StatelessProgrammableSwitch` has three read-only states: `Single Press`, `Double Press`, and `Long Press`.
@@ -119,8 +120,10 @@ The onboard LED of the ESP32 provides visual feedback for the connection status 
 - **Off**: The device is operating normally, assuming it is powered on and the small red power LED is illuminated.
 - **🔴 Red**: The button has been pressed, and the message was successfully sent to the MQTT broker. The LED turns off after one minute.
 - **🟢 Green**: The button has been released, and the message was successfully sent to the MQTT broker. The LED turns off after five seconds.
-- **🔵 Blue**: The device is unable to establish a Wi-Fi connection.
-- **🟣 Blinking Purple**: The device is connected to the Wi-Fi network but cannot connect to the MQTT broker.
+- **🔵 Blue**: The device is in test mode. Press and release the button to complete the test. Upon pressing, the LED will turn light blue. Once the test is successful, the blue light will turn off, and the device will return to normal operation.
+- **🟡 Yellow**: The device is unable to establish a Wi-Fi connection.
+- **🟣 Purple**: The device is connected to the Wi-Fi network but cannot connect to the MQTT broker.
+
 
 If you are using a different ESP32 model, you may need to modify the pin number assigned to the onboard LED.
 ## Example MQTT Message

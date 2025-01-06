@@ -22,6 +22,8 @@ unsigned long debounceDelay = 50;
 
 unsigned long ledOffTime = 0;
 bool ledOn = false;
+bool testCompleted = false;
+bool testPressed = false;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -50,7 +52,7 @@ void setup_wifi()
 
   while (WiFi.status() != WL_CONNECTED)
   {
-    setLedColor(0, 0, 200); // Blue for Wi-Fi failure
+    setLedColor(255, 255, 0); // Yellow for Wi-Fi failure
     delay(500);
     Serial.print(".");
   }
@@ -67,6 +69,11 @@ void reconnect()
     {
       Serial.println("Connected!");
       client.publish(mqtt_online_topic, "true");
+      if (!testCompleted)
+      {
+        // Back to test mode
+        testPressed ? setLedColor(0, 50, 255) : setLedColor(0, 0, 255);
+      }
     }
     else
     {
@@ -92,6 +99,8 @@ void setup()
 
   lastButtonState = digitalRead(buttonPin);
   buttonState = lastButtonState;
+
+  setLedColor(0, 0, 255); // Blue for test indication
 }
 
 void loop()
@@ -115,28 +124,46 @@ void loop()
     {
       buttonState = reading;
 
-      if (buttonState == HIGH)
+      if (!testCompleted)
       {
-        Serial.println("Button Pressed");
-        if (!client.publish(mqtt_topic, "1")) // Single Press
+        if (buttonState == HIGH)
         {
-          setLedColor(128, 0, 128, 3000); // Purple if data publish fails
+          testPressed = true; // Button is pressed
+          Serial.println("Button pressed, test started.");
+          setLedColor(0, 255, 255);
         }
-        else
+        else if (testPressed && buttonState == LOW)
         {
-          setLedColor(200, 0, 0); // Red immediately
+          testCompleted = true; // Button released, test completed
+          setLedColor(0, 0, 0); 
+          Serial.println("Test completed. Sending enabled.");
         }
       }
       else
       {
-        Serial.println("Button Released");
-        if (!client.publish(mqtt_topic, "L")) // Long Press
+        if (buttonState == HIGH)
         {
-          setLedColor(128, 0, 128, 3000); // Purple if data publish fails
+          Serial.println("Button Pressed");
+          if (!client.publish(mqtt_topic, "1")) // Single Press
+          {
+            setLedColor(128, 0, 128, 3000); // Purple if data publish fails
+          }
+          else
+          {
+            setLedColor(200, 0, 0); // Red
+          }
         }
         else
         {
-          setLedColor(0, 200, 0, 5000); // Green for 5 seconds
+          Serial.println("Button Released");
+          if (!client.publish(mqtt_topic, "L")) // Long Press
+          {
+            setLedColor(128, 0, 128, 3000); // Purple if data publish fails
+          }
+          else
+          {
+            setLedColor(0, 200, 0, 5000); // Green for 5 seconds
+          }
         }
       }
     }
@@ -144,7 +171,7 @@ void loop()
 
   if (ledOn && millis() > ledOffTime)
   {
-    strip.setPixelColor(0, strip.Color(0, 0, 0)); // Turn off LED
+    strip.setPixelColor(0, strip.Color(0, 0, 0)); 
     strip.show();
     ledOn = false;
   }

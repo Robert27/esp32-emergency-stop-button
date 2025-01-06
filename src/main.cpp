@@ -7,7 +7,6 @@ const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASSWORD;
 
 const char *mqtt_server = MQTT_SERVER;
-
 const char *mqtt_user = MQTT_USER;
 const int mqtt_port = MQTT_PORT;
 const char *mqtt_password = MQTT_PASSWORD;
@@ -15,15 +14,33 @@ const char *mqtt_topic = "home/emergency_button/state";
 const char *mqtt_online_topic = "home/emergency_button/online";
 
 const int buttonPin = 5;
-const int ledPin = 8; // Onboard LED pin for ESP32-C3 DevKitC V2
+const int ledPin = 8;
 int lastButtonState = HIGH;
 int buttonState = HIGH;
 unsigned long lastDebounceTime = 0;
 unsigned long debounceDelay = 50;
 
+unsigned long ledOffTime = 0;
+bool ledOn = false;
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(1, ledPin, NEO_GRB + NEO_KHZ800);
+
+void setLedColor(uint8_t r, uint8_t g, uint8_t b, int duration = 0)
+{
+  strip.setPixelColor(0, strip.Color(r, g, b));
+  strip.show();
+  if (duration > 0)
+  {
+    ledOffTime = millis() + duration;
+    ledOn = true;
+  }
+  else
+  {
+    ledOn = false;
+  }
+}
 
 void setup_wifi()
 {
@@ -33,10 +50,12 @@ void setup_wifi()
 
   while (WiFi.status() != WL_CONNECTED)
   {
+    setLedColor(0, 0, 200); // Blue for Wi-Fi failure
     delay(500);
     Serial.print(".");
   }
   Serial.println("\nWi-Fi connected.");
+  setLedColor(0, 0, 0);
 }
 
 void reconnect()
@@ -54,6 +73,8 @@ void reconnect()
       Serial.print("Failed, rc=");
       Serial.print(client.state());
       Serial.println(" Trying again in 5 seconds...");
+
+      setLedColor(128, 0, 128, 3000); // Purple for MQTT connection failure
       delay(5000);
     }
   }
@@ -62,14 +83,13 @@ void reconnect()
 void setup()
 {
   pinMode(buttonPin, INPUT_PULLUP);
-  strip.begin(); // Initialize the NeoPixel library
-  strip.show();  // Initialize all pixels to 'off'
+  strip.begin();
+  strip.show();
   Serial.begin(115200);
   setup_wifi();
 
   client.setServer(mqtt_server, mqtt_port);
 
-  // Remove the following two lines if you do want to send the current state on boot
   lastButtonState = digitalRead(buttonPin);
   buttonState = lastButtonState;
 }
@@ -98,23 +118,36 @@ void loop()
       if (buttonState == HIGH)
       {
         Serial.println("Button Pressed");
-        client.publish(mqtt_topic, "1"); // Publish pressed state as single press
-        strip.setPixelColor(0, strip.Color(200, 0, 0)); // Red
-        strip.show();
+        if (!client.publish(mqtt_topic, "1")) // Single Press
+        {
+          setLedColor(128, 0, 128, 3000); // Purple if data publish fails
+        }
+        else
+        {
+          setLedColor(200, 0, 0); // Red immediately
+        }
       }
       else
       {
         Serial.println("Button Released");
-        client.publish(mqtt_topic, "L"); // Publish released state as long press
-        strip.setPixelColor(0, strip.Color(0, 200, 0)); // Green
-        strip.show();
-        delay(5000); // 5 seconds delay
-        strip.setPixelColor(0, strip.Color(0, 0, 0));
-        strip.show();
+        if (!client.publish(mqtt_topic, "L")) // Long Press
+        {
+          setLedColor(128, 0, 128, 3000); // Purple if data publish fails
+        }
+        else
+        {
+          setLedColor(0, 200, 0, 5000); // Green for 5 seconds
+        }
       }
     }
   }
 
+  if (ledOn && millis() > ledOffTime)
+  {
+    strip.setPixelColor(0, strip.Color(0, 0, 0)); // Turn off LED
+    strip.show();
+    ledOn = false;
+  }
+
   lastButtonState = reading;
 }
-

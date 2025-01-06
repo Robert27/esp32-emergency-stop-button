@@ -28,17 +28,17 @@ A few years ago I randomly bought a emergency stop button from a local store. I 
 For the wiring setup, follow these steps:
 
 1. **Connect the Button to the ESP32**:
-   - **Pin 5 (GPIO 5)**: Connect this pin to one terminal of the emergency stop button.
+   - **Pin 0 (GPIO 0)**: Connect this pin to one terminal of the emergency stop button.
    - **GND**: Connect the other terminal of the emergency stop button to the GND pin of the ESP32.
 2. **Button Type**:
 
    - Use a **Normally Closed (NC)** push button. When the button is pressed, it will break the circuit, signaling a "pressed" state to the ESP32. When the button is released, the circuit is completed, signaling a "released" state.
 
 3. **Wiring Summary**:
-   - **Pin 5 (GPIO 5)** → One terminal of the push button
+   - **Pin 0 (GPIO 0)** → One terminal of the push button
    - **GND** → Other terminal of the push button
 
-The circuit should be simple, with the button closing or opening the circuit between **Pin 5** and **GND**.
+The circuit should be simple, with the button closing or opening the circuit between **Pin 0** and **GND**.
 
 <img src="/assets/wiring.jpg" width="60%">
 

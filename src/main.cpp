@@ -13,7 +13,7 @@ const char *mqtt_password = MQTT_PASSWORD;
 const char *mqtt_topic = "home/emergency_button/state";
 const char *mqtt_online_topic = "home/emergency_button/online";
 
-const int buttonPin = 5;
+const int buttonPin = 0;
 const int ledPin = 8;
 int lastButtonState = HIGH;
 int buttonState = HIGH;

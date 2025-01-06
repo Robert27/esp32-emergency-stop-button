@@ -8,11 +8,11 @@ const char* password = WIFI_PASSWORD;
 const char* mqtt_server = MQTT_SERVER;
 
 const char* mqtt_user = MQTT_USER;
+const int mqtt_port = MQTT_PORT;
 const char* mqtt_password = MQTT_PASSWORD;
 const char* mqtt_topic = "home/emergency_button/state";
 const char* mqtt_online_topic = "home/emergency_button/online";
 
-const int mqtt_port = 1883;
 const int buttonPin = 5;
 int lastButtonState = HIGH;
 int buttonState = HIGH;
@@ -39,7 +39,7 @@ void reconnect() {
     Serial.print("Connecting to MQTT...");
     if (client.connect("ESP32C3_Client", mqtt_user, mqtt_password)) {
       Serial.println("Connected!");
-      client.publish(mqtt_online_topic, "online"); // Publish online state
+      client.publish(mqtt_online_topic, "true");
     } else {
       Serial.print("Failed, rc=");
       Serial.print(client.state());

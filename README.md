@@ -1,21 +1,23 @@
-# Emergency Button with HomeKit Integration
+# Emergency Stop Button with HomeKit Integration
 
 ## Overview
 
-This project uses an **ESP32 microcontroller** to create an emergency button that can trigger **HomeKit scenes through MQTT**.
+This project uses an **ESP32 microcontroller** to create an emergency stop button that can trigger **HomeKit scenes through MQTT**.
 \
-The ESP32 connects to an MQTT broker and publishes the state of the emergency button (pressed or released). This state is then processed by Homebridge using the Mqttthing plugin, which converts the MQTT message into a virtual switch in HomeKit. This allows you to use the emergency button to control HomeKit scenes or other automations.
+The ESP32 connects to an MQTT broker and publishes the state of the emergency stop button (pressed or released). This state is then processed by Homebridge using the Mqttthing plugin, which converts the MQTT message into a virtual switch in HomeKit. This allows you to use the emergency stop button to control HomeKit scenes or other automations.
 
-The repository contains the code for the ESP32 microcontroller, which reads the state of the emergency button and sends MQTT messages to the broker. It also includes instructions on setting up Homebridge with the **Mqttthing** plugin to handle the MQTT messages and create a virtual switch in HomeKit.
+The repository contains the code for the ESP32 microcontroller, which reads the state of the emergency stop button and sends MQTT messages to the broker. It also includes instructions on setting up Homebridge with the **Mqttthing** plugin to handle the MQTT messages and create a virtual switch in HomeKit.
+
+<img src="/assets/components.jpg" width="60%">
 
 ## But Why?
 
-A few years ago I randomly bought a emergency button from a local store. I was thinking about how to use it in a smart home environment, since it was just sitting in a drawer. I came up with the idea of using it as a panic button to trigger a scene in HomeKit. This project is the result of that idea.
+A few years ago I randomly bought a emergency stop button from a local store. I was thinking about how to use it in a smart home environment, since it was just sitting in a drawer. I came up with the idea of using it as a panic button to trigger a scene in HomeKit. This project is the result of that idea. Of course, it might have been easier to just buy a smart button or use ESPHome and Home Assistant, but where's the fun in that?
 
 ## Components Needed
 
 - **Microcontroller** (e.g., ESP32-C3)
-- **Emergency Button** 
+- **Emergency Stop Button** 
 - **Wi-Fi Network** (for the ESP32 to connect to your MQTT broker)
 - **MQTT Broker** (e.g., Mosquitto or any other MQTT service)
 - **Homebridge** with **Mqttthing** plugin installed
@@ -26,8 +28,8 @@ A few years ago I randomly bought a emergency button from a local store. I was t
 For the wiring setup, follow these steps:
 
 1. **Connect the Button to the ESP32**:
-   - **Pin 5 (GPIO 5)**: Connect this pin to one terminal of the emergency button.
-   - **GND**: Connect the other terminal of the emergency button to the GND pin of the ESP32.
+   - **Pin 5 (GPIO 5)**: Connect this pin to one terminal of the emergency stop button.
+   - **GND**: Connect the other terminal of the emergency stop button to the GND pin of the ESP32.
 2. **Button Type**:
 
    - Use a **Normally Closed (NC)** push button. When the button is pressed, it will break the circuit, signaling a "pressed" state to the ESP32. When the button is released, the circuit is completed, signaling a "released" state.
@@ -37,6 +39,8 @@ For the wiring setup, follow these steps:
    - **GND** → Other terminal of the push button
 
 The circuit should be simple, with the button closing or opening the circuit between **Pin 5** and **GND**.
+
+<img src="/assets/wiring.jpg" width="60%">
 
 ## How It Works
 
@@ -95,7 +99,7 @@ In order to provide your Wi-Fi and MQTT credentials to the ESP32, you need to cr
 - Configure the plugin with the MQTT connection details and credentials.
 - Set the `Get Switch` event to the MQTT topic (`home/emergency_button/state`) and `Get Online` event to the MQTT topic (`home/emergency_button/status`).
 
-### 5. Using the Emergency Button
+### 5. Using the Emergency Stop Button
 
 Once everything is set up:
 
@@ -117,4 +121,4 @@ Once everything is set up:
 
 ## Conclusion
 
-This project provides an easy way to trigger HomeKit scenes or automations with a physical emergency button. The combination of an ESP32, MQTT, and Homebridge makes it simple to integrate the button into your smart home ecosystem. But most importantly, it's a fun way to repurpose a simple device into a useful tool for your home and learn about different technologies in the process.
+This project provides an easy way to trigger HomeKit scenes or automations with a physical emergency stop button. The combination of an ESP32, MQTT, and Homebridge makes it simple to integrate the button into your Homebridge ecosystem. But most importantly, it's a fun way to repurpose a simple device into a useful tool for your home and learn about different technologies in the process.

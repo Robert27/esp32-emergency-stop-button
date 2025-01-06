@@ -14,9 +14,9 @@ The repository contains the code for the ESP32 microcontroller, which reads the 
 
 A few years ago I randomly bought a emergency stop button from a local store. I was thinking about how to use it in a smart home environment, since it was just sitting in a drawer. I came up with the idea of using it as a panic button to trigger a scene in HomeKit. This project is the result of that idea. Of course, it might have been easier to just buy a smart button or use ESPHome and Home Assistant, but where's the fun in that?
 
-## Components Needed
+## Components Used
 
-- **Microcontroller** (e.g., ESP32-C3)
+- **ESP32-C3 DevKitC V2** (e.g., an ESP32 microcontroller)
 - **Emergency Stop Button**
 - **Wi-Fi Network** (for the ESP32 to connect to your MQTT broker)
 - **MQTT Broker** (e.g., Mosquitto or any other MQTT service)
@@ -44,7 +44,7 @@ The circuit should be simple, with the button closing or opening the circuit bet
 
 ## How It Works
 
-1. **ESP32 Setup**: The ESP32 is programmed to monitor the state of a physical button. When the button is pressed or released, the ESP32 sends the corresponding state (`1` for pressed, `L` for released) to an MQTT broker.
+1. **ESP32 Setup**: The ESP32 is programmed to monitor the state of a physical button. When the button is pressed or released, the ESP32 sends the corresponding state (`1` for pressed, `L` for released) to an MQTT broker. Also the onboard LED will turn red when the button is pressed and green when it is released.
 2. **MQTT Communication**: The ESP32 connects to the MQTT broker using provided credentials (SSID, password, and MQTT broker details).
 3. **Homebridge Mqttthing**: The Homebridge instance uses the [Mqttthing](https://github.com/arachnetech/homebridge-mqttthing#readme) plugin to subscribe to the MQTT topic (`home/emergency_button/state`). When a state change is received, it triggers the corresponding action in HomeKit.
 4. **Virtual Switch in HomeKit**: The MQTT message is converted into a virtual switch in HomeKit, which can then be used to trigger scenes or automations.
@@ -122,6 +122,8 @@ Once everything is set up:
 
 - Make sure your MQTT broker is running and accessible to both the ESP32 and Homebridge.
 - You can modify the script to adjust debounce times, button behavior, and MQTT topics as needed.
+- When pressed the ESP32 onboard LED will turn red, and when released it will turn green for 5 seconds.
+On other ESP32 models, you may need to adjust the pin number for the onboard LED.
 - The ESP32 does not send the initial state of the button when it connects to the MQTT broker to avoid triggering the `released` state on startup.
 - Using `StatelessProgrammableSwitch` in favor of a regular switch allows for more flexibility in HomeKit scenes and automations, like turning off the triggered scene after a given time.
 

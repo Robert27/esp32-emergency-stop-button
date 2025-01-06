@@ -1,5 +1,6 @@
 #include <WiFi.h>
 #include <PubSubClient.h>
+#include <Adafruit_NeoPixel.h>
 #include "secrets.h"
 
 const char *ssid = WIFI_SSID;
@@ -14,6 +15,7 @@ const char *mqtt_topic = "home/emergency_button/state";
 const char *mqtt_online_topic = "home/emergency_button/online";
 
 const int buttonPin = 5;
+const int ledPin = 8; // Onboard LED pin for ESP32-C3 DevKitC V2
 int lastButtonState = HIGH;
 int buttonState = HIGH;
 unsigned long lastDebounceTime = 0;
@@ -21,6 +23,7 @@ unsigned long debounceDelay = 50;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(1, ledPin, NEO_GRB + NEO_KHZ800);
 
 void setup_wifi()
 {
@@ -59,6 +62,8 @@ void reconnect()
 void setup()
 {
   pinMode(buttonPin, INPUT_PULLUP);
+  strip.begin(); // Initialize the NeoPixel library
+  strip.show();  // Initialize all pixels to 'off'
   Serial.begin(115200);
   setup_wifi();
 
@@ -94,14 +99,22 @@ void loop()
       {
         Serial.println("Button Pressed");
         client.publish(mqtt_topic, "1"); // Publish pressed state as single press
+        strip.setPixelColor(0, strip.Color(200, 0, 0)); // Red
+        strip.show();
       }
       else
       {
         Serial.println("Button Released");
         client.publish(mqtt_topic, "L"); // Publish released state as long press
+        strip.setPixelColor(0, strip.Color(0, 200, 0)); // Green
+        strip.show();
+        delay(5000); // 5 seconds delay
+        strip.setPixelColor(0, strip.Color(0, 0, 0));
+        strip.show();
       }
     }
   }
 
   lastButtonState = reading;
 }
+

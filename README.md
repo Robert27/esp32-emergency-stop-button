@@ -130,7 +130,7 @@ If you are using a different ESP32 model, you may need to modify the pin number 
 
 - **Button Pressed**: Sends `1` to the MQTT topic `home/emergency_button/state`.
 - **Button Released**: Sends `L` to the MQTT topic `home/emergency_button/state`.
-- **Controller gets online**: Sends `true` to the MQTT topic `home/emergency_button/status`.
+- **Controller gets online**: Sends `true` to the MQTT topic `home/emergency_button/online`.
 
 ## Notes
 

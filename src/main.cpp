@@ -68,7 +68,7 @@ void reconnect()
     if (client.connect("ESP32C3_Client", mqtt_user, mqtt_password))
     {
       Serial.println("Connected!");
-      client.publish(mqtt_online_topic, "true");
+      client.publish(mqtt_online_topic, "true", true);
       if (!testCompleted)
       {
         // Back to test mode
@@ -144,7 +144,7 @@ void loop()
         if (buttonState == HIGH)
         {
           Serial.println("Button Pressed");
-          if (!client.publish(mqtt_topic, "1")) // Single Press
+          if (!client.publish(mqtt_topic, "1", true)) // Single Press
           {
             setLedColor(128, 0, 128, 3000); // Purple if data publish fails
           }
@@ -156,7 +156,7 @@ void loop()
         else
         {
           Serial.println("Button Released");
-          if (!client.publish(mqtt_topic, "L")) // Long Press
+          if (!client.publish(mqtt_topic, "L", true)) // Long Press
           {
             setLedColor(128, 0, 128, 3000); // Purple if data publish fails
           }
